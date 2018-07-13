@@ -1,4 +1,4 @@
-const MORSE_CODE = {
+const morseCODE = {
   '-.-.--': '!',
   '.-..-.': '"',
   '...-..-': '$',
@@ -56,33 +56,36 @@ const MORSE_CODE = {
   '...---...': 'SOS',
 };
 
-Object.freeze(MORSE_CODE);
+Object.freeze(morseCODE);
 
-/**
- * This is the entry point to the program.
- *
- * @param {string} morseCode The string to decode.
- */
 function decodeMorse(morseCode) {
-  // the function below has 3 variables which are word, letter, and decoded which accepts the words, letters and decoded values of the morse code
-function decodeMorse (morseCode) {
-    const word = (morseCode).split(' ');
-    const letter = word.map((w) => w.split(' '));
-    const decoded = [];
-
-    // the function below checks the lenght of the letter so it in the variable decoded and the second function checks the morse code dictionary decodes it
-    for(var i = 0; i < letter.lenght; i++) {
-        decoded[i] = [];
-        for(var x = 0; x< letter.lenght; x++) {
-            if(MORSE_CODE[letter[i][x]]) {
-               decoded[i].push( MORSE_CODE[letter[i][x]]);
-            }
-        }
+  const englishWord = [];
+  const code = morseCode.trim().split(' ');
+  // eslint-disable-next-line
+  if (morseCode === '') {
+    return '';
+  }
+  for (let i = 0; i < code.length; i += 1) {
+    if (
+      // testing for words
+      morseCODE[code[i]] === undefined
+      && morseCODE[code[i + 1]] === undefined
+      && morseCode[code[i + 2]] === undefined
+    ) {
+      englishWord.push(' ');
+    } else if (
+      // testing for letters
+      morseCODE[code[i]] === undefined
+      && morseCODE[code[i + 1]] !== undefined
+      && morseCode[code[i + 2]] !== undefined
+    ) {
+      englishWord.push(' ');
+    } else {
+      englishWord.push(morseCODE[code[i]]);
     }
-
-}
-
-console.log(decodeMorse);
+  }
+  const a = englishWord.join('');
+  return a;
 }
 
 module.exports = decodeMorse;
