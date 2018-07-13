@@ -1,121 +1,220 @@
-const inputs = [{
-        name: 'Hendrick',
-        dob: '1853-07-18T00:00:00.000Z',
-        regNo: '041',
-    },
-    {
-        name: 'Albert',
-        dob: '1879-03-14T00:00:00.000Z',
-        regNo: '033',
-    },
-    {
-        name: 'Marie',
-        dob: '1867-11-07T00:00:00.000Z',
-        regNo: '024',
-    },
-    {
-        name: 'Neils',
-        dob: '1885-10-07T00:00:00.000Z',
-        regNo: '02',
-    },
-    {
-        name: 'Max',
-        dob: '1858-04-23T00:00:00.000Z',
-        regNo: '014',
-    },
-    {
-        name: 'Erwin',
-        dob: '1887-08-12T00:00:00.000Z',
-        regNo: '09',
-    },
-    {
-        name: 'Auguste',
-        dob: '1884-01-28T00:00:00.000Z',
-        regNo: '08',
-    },
-    {
-        name: 'Karl',
-        dob: '1901-12-05T00:00:00.000Z',
-        regNo: '120',
-    },
-    {
-        name: 'Louis', //
-        dob: '1892-08-15T00:00:00.000Z',
-        regNo: '022',
-    },
-    {
-        name: 'Arthur',
-        dob: '1892-09-10T00:00:00.000Z',
-        regNo: '321',
-    },
-    {
-        name: 'Paul',
-        dob: '1902-08-08T00:00:00.000Z',
-        regNo: '055',
-    },
-    {
-        name: 'William',
-        dob: '1890-03-31T00:00:00.000Z',
-        regNo: '013',
-    },
-    {
-        name: 'Owen',
-        dob: '1879-04-26T00:00:00.000Z',
-        regNo: '052',
-    },
-    {
-        name: 'Martin',
-        dob: '1871-02-15T00:00:00.000Z',
-        regNo: '063',
-    },
-    {
-        name: 'Guye',
-        dob: '1866-10-15T00:00:00.000Z',
-        regNo: '084',
-    },
-    {
-        name: 'Charles',
-        dob: '1868-02-14T00:00:00.000Z',
-        regNo: '091',
-    },
-}];
-function classifier(input) {
-  // this function collects the data from the array and puts the students in different groups
-  // else the if statement checks if there is an available to add a new student in if not adds the students to a new group
-// the second else statement is to increment number of groups and add the student to a new group
-  processStudentsData(inputs).forEach((student, index) => {
-    if (index === 0) groups.noOfGroups++
-    const key = `group${groups.noOfGroups}`
+const classifier = (inputi) => {
+  // computational variables
+  const obj = {};
+  const studentGroups = [];
+  // so it doesnt mutate original array
+  const input = [];
 
-    if (studentCanJoinGroup(student, groups[key])) {
-      if (!groups[key]) addStudentToNewGroup(student, key)
-      else {
-        groups[key].members.push({
-          name: student.name,
-          age: student.age
-        })
-        groups[key].oldest = Math.max(groups[key].oldest, student.age)
-        groups[key].sum += student.age
+  // creating new array to use for computation
+  inputi.forEach((element) => {
+    const olyr = new Date(element.dob);
+    const oldyear = parseInt(olyr.getFullYear(), 10);
+    const current = new Date();
+    const curryear = parseInt(current.getFullYear(), 10);
+    const age = curryear - oldyear;
+    element.age = age;
+    input.push(element);
+  });
 
-        const newRegNo = student.regNo | 0
+  // sort the array according to age
+  input.sort((a, b) => a.age - b.age);
 
-        groups[key].regNos = [newRegNo]
-          .concat(groups[key].regNos)
-          .sort((a, b) => a > b)
-      }
-    } else {
-      const newKey = `group${++groups.noOfGroups}`
-
-      addStudentToNewGroup(student, newKey)
+  // if the input array length is less than  1
+  if (input.length === 0 || input === null) {
+    return {
+      noOfGroups: 0,
+    };
+  }
+  // for if the input array is a single value array
+  if (input.length === 1) {
+    const newI = input;
+    if (newI.length >= 3) {
+      const newInput = newI.splice(0, 3);
+      const inner = {
+        members: [],
+        oldest: 0,
+        sum: 0,
+        regNos: [],
+      };
+      // eslint-disable-next-line
+      newInput.forEach(element => {
+        const memberObject = {
+          name: '',
+          age: 0,
+          dob: '',
+          regNo: '',
+        };
+        // eslint-disable-next-line
+        for (const [key, value] of Object.entries(element)) {
+          switch (key) {
+            // eslint-disable-next-line
+            case 'dob':
+              const olyr = new Date(value);
+              const oldyear = parseInt(olyr.getFullYear());
+              const current = new Date();
+              const curryear = parseInt(current.getFullYear());
+              const age = curryear - oldyear;
+              memberObject.dob = value;
+              inner.sum += age;
+              if (inner.oldest >= age) {
+                memberObject.age = age;
+              } else {
+                memberObject.age = age;
+                inner.oldest = age;
+              }
+              break;
+            case 'name':
+              memberObject.name = value;
+              break;
+            case 'regNo':
+              inner.regNos.push(value);
+              memberObject.regNo = value;
+              break;
+            default:
+              throw Error;
+          }
+        }
+        inner.members.push(memberObject);
+      });
+      // To sort the regNos of a group
+      inner.regNos.sort((a, b) => a - b);
+      studentGroups.push(inner);
     }
-  })
-// displays the content of each group
-  console.log(JSON.stringify(groups))
+    const {
+      members, oldest, sum, regNos,
+    } = studentGroups;
+    return {
+      group1: {
+        members,
+        oldest,
+        sum,
+        regNos,
+      },
+      noOfGroups: 1,
+    };
+  }
 
-}
-
-// the group of students are generated from the arrray inputs
-groupStudents(inputs)
-}
+  // eslint-disable-next-line
+  input.forEach(element => {
+    // on first run
+    if (Object.keys(obj).length === 0 || Object.keys(obj).length === undefined) {
+      // after the first resolution of the entry
+      // to hold the group
+      const inner = {
+        members: [],
+        regNos: [],
+      };
+      // to hold  the  member of a group
+      // eslint-disable-next-line
+      inner.members.push(element);
+      inner.regNos.push(parseInt(element.regNo, 10));
+      obj.group1 = {
+        members: inner.members,
+        oldest: element.age,
+        sum: element.age,
+        regNos: inner.regNos,
+      };
+    } else {
+      let size = Object.keys(obj).length;
+      const newInner = obj[`group${size}`];
+      if (newInner.members.length === 3) {
+        const inner = {
+          members: [],
+          oldest: 0,
+          sum: 0,
+          regNos: [],
+        };
+        // eslint-disable-next-line
+        for (const [key, value] of Object.entries(element)) {
+          switch (key) {
+            // eslint-disable-next-line
+            case 'age':
+              inner.sum += value;
+              if (inner.oldest < value) {
+                inner.oldest = value;
+              }
+              break;
+            case 'regNo':
+              inner.regNos.push(parseInt(value, 10));
+              break;
+            default:
+              break;
+          }
+        }
+        inner.members.push(element);
+        size = parseInt(size, 10) + 1;
+        obj[`group${size}`] = {
+          members: inner.members,
+          oldest: inner.oldest,
+          sum: inner.sum,
+          regNos: inner.regNos,
+        };
+      } else {
+        // check the fist entry to see if its not filled up and if filled up create a new entry
+        // after the first resolution of the entry
+        // eslint-disable-next-line
+        const test = newInner.members.length - 1;
+        if (
+          newInner.members[test].age <= element.age
+          && element.age - newInner.members[test].age <= 5
+        ) {
+          // eslint-disable-next-line
+          for (const [key, value] of Object.entries(element)) {
+            switch (key) {
+              // eslint-disable-next-line
+              case 'age':
+                newInner.sum += value;
+                if (newInner.oldest < value) {
+                  newInner.oldest = value;
+                }
+                break;
+              case 'regNo':
+                newInner.regNos.push(parseInt(value, 10));
+                break;
+              default:
+                break;
+            }
+          }
+          newInner.members.push(element);
+          newInner.regNos.sort((a, b) => a - b);
+        } else {
+          const inner = {
+            members: [],
+            oldest: 0,
+            sum: 0,
+            regNos: [],
+          };
+          // eslint-disable-next-line
+          for (const [key, value] of Object.entries(element)) {
+            switch (key) {
+              // eslint-disable-next-line
+              case 'age':
+                inner.sum += value;
+                if (inner.oldest < value) {
+                  inner.oldest = value;
+                }
+                break;
+              case 'regNo':
+                inner.regNos.push(parseInt(value, 10));
+                break;
+              default:
+                break;
+            }
+          }
+          inner.members.push(element);
+          size += 1;
+          obj[`group${size}`] = {
+            members: inner.members,
+            oldest: inner.oldest,
+            sum: inner.sum,
+            regNos: inner.regNos,
+          };
+        }
+      }
+    }
+  });
+  obj.noOfGroups = Object.keys(obj).length;
+  return obj;
+};
 
 module.exports = classifier;
