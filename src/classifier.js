@@ -1,7 +1,6 @@
 const classifier = (inputi) => {
   // computational variables
   const obj = {};
-  const studentGroups = [];
   // so it doesnt mutate original array
   const input = [];
 
@@ -12,6 +11,7 @@ const classifier = (inputi) => {
     const current = new Date();
     const curryear = parseInt(current.getFullYear(), 10);
     const age = curryear - oldyear;
+    // eslint-disable-next-line
     element.age = age;
     input.push(element);
   });
@@ -25,75 +25,6 @@ const classifier = (inputi) => {
       noOfGroups: 0,
     };
   }
-  // for if the input array is a single value array
-  if (input.length === 1) {
-    const newI = input;
-    if (newI.length >= 3) {
-      const newInput = newI.splice(0, 3);
-      const inner = {
-        members: [],
-        oldest: 0,
-        sum: 0,
-        regNos: [],
-      };
-      // eslint-disable-next-line
-      newInput.forEach(element => {
-        const memberObject = {
-          name: '',
-          age: 0,
-          dob: '',
-          regNo: '',
-        };
-        // eslint-disable-next-line
-        for (const [key, value] of Object.entries(element)) {
-          switch (key) {
-            // eslint-disable-next-line
-            case 'dob':
-              const olyr = new Date(value);
-              const oldyear = parseInt(olyr.getFullYear());
-              const current = new Date();
-              const curryear = parseInt(current.getFullYear());
-              const age = curryear - oldyear;
-              memberObject.dob = value;
-              inner.sum += age;
-              if (inner.oldest >= age) {
-                memberObject.age = age;
-              } else {
-                memberObject.age = age;
-                inner.oldest = age;
-              }
-              break;
-            case 'name':
-              memberObject.name = value;
-              break;
-            case 'regNo':
-              inner.regNos.push(value);
-              memberObject.regNo = value;
-              break;
-            default:
-              throw Error;
-          }
-        }
-        inner.members.push(memberObject);
-      });
-      // To sort the regNos of a group
-      inner.regNos.sort((a, b) => a - b);
-      studentGroups.push(inner);
-    }
-    const {
-      members, oldest, sum, regNos,
-    } = studentGroups;
-    return {
-      group1: {
-        members,
-        oldest,
-        sum,
-        regNos,
-      },
-      noOfGroups: 1,
-    };
-  }
-
   // eslint-disable-next-line
   input.forEach(element => {
     // on first run
